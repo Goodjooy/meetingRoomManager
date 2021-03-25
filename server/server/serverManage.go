@@ -2,8 +2,8 @@ package server
 
 import (
 	"fmt"
-	"todo-web/server/IOC"
-	"todo-web/server/manage"
+	"meetroom/server/IOC"
+	"meetroom/server/manage"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"

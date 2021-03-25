@@ -1,7 +1,7 @@
 package manage
 
 import (
-	"todo-web/server/IOC"
+	"meetroom/server/IOC"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"

@@ -3,8 +3,8 @@ package manage
 import (
 	"crypto/sha256"
 	"fmt"
+	"meetroom/server/IOC"
 	"net/http"
-	"todo-web/server/IOC"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
@@ -128,6 +128,7 @@ const lowAlphaStart = 'a'
 const upAlphaStart = 'A'
 
 func DateSHA256Hash(passwd string) string {
+	
 	hash := sha256.Sum256([]byte(passwd))
 
 	var hashRe []byte
