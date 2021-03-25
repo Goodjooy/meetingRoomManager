@@ -43,3 +43,13 @@ type InFeildHandler struct {
 }
 
 
+type RespondType uint
+
+const (
+	JSON RespondType = iota
+	HTML
+	STRING
+	FILE
+	FILE_WITH_NAME
+	REDIRECT
+)

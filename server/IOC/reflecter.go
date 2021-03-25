@@ -6,6 +6,7 @@ import (
 	"meetroom/err"
 	"meetroom/server/IOC/tools"
 	"meetroom/server/IOC/typeTransfrom"
+	"net/http"
 	"reflect"
 
 	"github.com/garyburd/redigo/redis"
@@ -149,6 +150,7 @@ func DoIOC(fn FuncHandler, db *gorm.DB, rC *redis.Conn) gin.HandlerFunc {
 		}
 		//todo handle results
 		var r []interface{}
+		var sendData []interface{}
 
 		for _, v := range results {
 			t := v.Interface()
@@ -158,7 +160,39 @@ func DoIOC(fn FuncHandler, db *gorm.DB, rC *redis.Conn) gin.HandlerFunc {
 		} else if len(r) == 1 {
 			c.JSON(200, r[0])
 		} else {
-			c.JSON(200, r)
+			//对多种响应处理
+			var respondType RespondType = JSON
+			var respondStatus int = http.StatusOK
+			returnLen := len(r)
+
+			if value, ok := r[returnLen-1].(RespondType); ok {
+				//最后一个是返回状态
+				respondType = value
+				sendData = r[:returnLen-1]
+			} else if rType, rOK := r[returnLen-2].(RespondType); rOK {
+				if status, sOK := r[returnLen-1].(int); sOK {
+					respondType = rType
+					respondStatus = status
+					sendData = r[:returnLen-2]
+				}
+			} else {
+				sendData = r[:]
+			}
+
+			switch respondType {
+			case JSON:
+				c.JSON(respondStatus, sendData)
+			case HTML:
+				c.HTML(respondStatus, sendData[0].(string), sendData[1])
+			case STRING:
+				c.String(respondStatus, sendData[0].(string), sendData[1:]...)
+			case FILE:
+				c.File(sendData[0].(string))
+			case REDIRECT:
+				c.Redirect(respondStatus, sendData[0].(string))
+			case FILE_WITH_NAME:
+				c.FileAttachment(sendData[0].(string), sendData[1].(string))
+			}
 		}
 	}
 	return fun

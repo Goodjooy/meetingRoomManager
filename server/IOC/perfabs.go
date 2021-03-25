@@ -106,3 +106,9 @@ func (r *RedisHandle) GetAllRecord(userID uint) []string {
 	}
 	return records
 }
+
+type HtmlRender struct {
+	htmlName string
+
+	
+}
